@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador-SENAI</title>
+    <link rel="stylesheet" href="../css/gerenciar_cadastro.css">
+    <meta name="viewport" content="initial-scale=1, width=device-width" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+
+<body>
+    <header>
+        <div class="menu-box" id="menu-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <img class="logo_senai" src="../assets/logo_senai.png" alt="Logo SENAI">
+    </header>
+
+    <nav class="sidebar" id="sidebar">
+        <ul>
+            <li>
+                <a href="#">
+                    <img src="../assets/calendar.png" alt="Ícone de calendário">
+                    <span class="menu-texto">Calendário<br></span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <img src="../assets/profile.png" alt="Ícone de perfil">
+                    <span class="menu-texto">Gerenciar<br>Cadastros</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <img src="../assets/checked.png" alt="Ícone de check">
+                    <span class="menu-texto">Validação<br>de Turmas</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <img src="../assets/gear.png" alt="Ícone de engrenagem">
+                    <span class="menu-texto">Ferramentas<br>de Gestão</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <img src="../assets/alocacao.png" alt="Ícone de alocação">
+                    <span class="menu-texto">Alterar<br>Alocações</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <img src="../assets/report (1).png" alt="Ícone de relatório">
+                    <span class="menu-texto">Gerar<br>Relatórios</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <img src="../assets/account.png" alt="Ícone de conta">
+                    <span class="menu-texto">Meu<br>Perfil</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <main id="conteudo-cadastro">
+        <div class="titulos">
+            <div class="gerenciar-titulo">
+                <img src="../assets/profile_red.png" alt="icone_person">
+                <h1>Gerenciador de Cadastro</h1>
+            </div>
+            <div class="docentes">
+                <h2>Cursos</h2>
+                <hr>
+            </div>
+            <div class="sub_titulos">
+                <div class="adiconar">
+                    <button id="abrirModal" class="adicionar_button"><i class="bi bi-plus-circle-fill"></i>
+                        Criar</button>
+                </div>
+                <div class="pesquisa">
+                    <input type="text" name="" id="searchInput" placeholder="Pesquisar Cursos...">
+                    <span class="icon_pesquisa">
+                        <i class="bi bi-search"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="conteudo_docente">
+            <div class="info_docente">
+                <div class="conteudo">
+                    <p class="nome">Nome: <b>Desenvolvimento de Sistemas </b></p>
+                    <p class="especialidade carga_horaria"> <b><i class="bi bi-stopwatch"></i></b>Carga Horária: 8h</p>
+                    <p class="tipo"> <b><i class="bi bi-pc-display-horizontal" style="margin-right: 5px;"></i></b>Tipo: Técnico</p>
+                    <p class="status"><b><i class="bi bi-arrow-clockwise" id="status_para"></i></b>Status: Inativo</p>
+                </div>
+                <div class="funcoes_curso">
+                    <div class="buttons_curso">
+                        <button class="editar_docente"><i class="bi bi-pen-fill"></i>Editar </button>
+                        <button class="status_docente inativo"><i class="bi bi-x-circle"></i>Inativo</button>
+                    </div>
+                    <div class="buttons_curso">
+                        <button class="horario"><i class="bi bi-x-circle"></i>Duração de aula: 55min</button>
+                    </div>
+                </div>
+            </div>
+            <div class="info_docente">
+                <div class="conteudo">
+                    <p class="nome">Nome: <b>Eletrônica</b></p>
+                    <p class="especialidade carga_horaria"> <b><i class="bi bi-stopwatch"></i></b>Carga Horária: 4h</p>
+                    <p class="tipo"> <b><i class="bi bi-pc-display-horizontal" style="margin-right: 5px;"></i></b>Tipo: Cai</p>
+                    <p class="status"><b><i class="bi bi-arrow-clockwise" id="status_para"></i></b>Status: Inativo</p>
+                </div>
+                <div class="funcoes_curso">
+                    <div class="buttons_curso">
+                        <button class="editar_docente"><i class="bi bi-pen-fill"></i>Editar </button>
+                        <button class="status_docente inativo"><i class="bi bi-x-circle"></i>Inativo</button>
+                    </div>
+                    <div class="buttons_curso">
+                        <button class="horario"><i class="bi bi-x-circle"></i>Duração de aula: 45min</button>
+                    </div>
+                </div>
+            </div>
+            <div class="info_docente">
+                <div class="conteudo">
+                    <p class="nome">Nome: <b>Química</b></p>
+                    <p class="especialidade carga_horaria"> <b><i class="bi bi-stopwatch"></i></b>Carga Horária: 6h</p>
+                    <p class="tipo"> <b><i class="bi bi-pc-display-horizontal" style="margin-right: 5px;"></i></b>Tipo: Fic</p>
+                    <p class="status"><b><i class="bi bi-arrow-clockwise" id="status_para"></i></b>Status: Inativo</p>
+                </div>
+                <div class="funcoes_curso">
+                    <div class="buttons_curso">
+                        <button class="editar_docente"><i class="bi bi-pen-fill"></i>Editar </button>
+                        <button class="status_docente inativo"><i class="bi bi-x-circle"></i>Inativo</button>
+                    </div>
+                    <div class="buttons_curso">
+                        <button class="horario"><i class="bi bi-x-circle"></i>Duração de aula: 1hr</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="modalCriar" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="modalCriar"><i class="bi bi-x-circle"></i></span>
+            <div class="header-container">
+                <h2>Criar Cursos</h2>
+                <div class="header-underline"></div>
+            </div>
+            <p>Preencha os campos abaixo para realizar o cadastro de um novo Cursos.</p>
+            <div class="input-group">
+                <input type="text" id="addTipo" placeholder="Tipo">
+                <input type="text" id="addCargaHoraria" placeholder="Carga Horária">
+                <input type="text" id="addNome" placeholder="Nome do Curso">
+            </div>
+            <div class="button-container">
+                <button class="btn-criar">Criar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalEditar" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="modalEditar"><i class="bi bi-x-circle"></i></span>
+            <div class="header-container">
+                <h2>Editar curso</h2>
+                <div class="header-underline"></div>
+            </div>
+            <p>Altere os campos abaixo para atualizar o cadastro do cursos.</p>
+            <div class="input-group">
+                <input type="text" id="editTipo" placeholder="Tipo">
+                <input type="text" id="editCargaHoraria" placeholder="Carga Horaria">
+                <input type="text" id="editNome" placeholder="Nome do curso">
+            </div>
+            <div class="button-container">
+                <button id="salvarEdicao" class="btn-salvar">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../script/script_cursos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM

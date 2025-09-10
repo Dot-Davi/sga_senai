@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador-SENAI</title>
+    <link rel="stylesheet" href="../css/gerenciar_cadastro.css">
+    <meta name="viewport" content="initial-scale=1, width=device-width" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+
+<body>
+    <header>
+        <div class="menu-box" id="menu-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <img class="logo_senai" src="../assets/logo_senai.png" alt="Logo SENAI">
+    </header>
+
+    <nav class="sidebar" id="sidebar">
+        <ul>
+            <li>
+                <a href="#">
+                    <img src="../assets/calendar.png" alt="Ícone de calendário">
+                    <span class="menu-texto">Calendário<br></span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <img src="../assets/profile.png" alt="Ícone de perfil">
+                    <span class="menu-texto">Gerenciar<br>Cadastros</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <img src="../assets/checked.png" alt="Ícone de check">
+                    <span class="menu-texto">Validação<br>de Turmas</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <img src="../assets/gear.png" alt="Ícone de engrenagem">
+                    <span class="menu-texto">Ferramentas<br>de Gestão</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <img src="../assets/alocacao.png" alt="Ícone de alocação">
+                    <span class="menu-texto">Alterar<br>Alocações</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <img src="../assets/report (1).png" alt="Ícone de relatório">
+                    <span class="menu-texto">Gerar<br>Relatórios</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <img src="../assets/account.png" alt="Ícone de conta">
+                    <span class="menu-texto">Meu<br>Perfil</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <main id="conteudo-cadastro">
+        <div class="titulos">
+            <div class="gerenciar-titulo">
+                <img src="../assets/profile_red.png" alt="icone_person">
+                <h1>Gerenciador de Cadastro</h1>
+            </div>
+            <div class="docentes">
+                <h2>Ambientes</h2>
+                <hr>
+            </div>
+            <div class="sub_titulos">
+                <div class="adiconar">
+                    <button id="abrirModal" class="adicionar_button"><i class="bi bi-plus-circle-fill"></i>
+                        Criar</button>
+                </div>
+                <div class="pesquisa">
+                    <input type="text" name="" id="searchInput" placeholder="Pesquisar Ambientes...">
+                    <span class="icon_pesquisa">
+                        <i class="bi bi-search"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="conteudo_docente" id="lista-ambientes">
+            </div>
+
+    </main>
+
+    <div id="modalCriar" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="modalCriar"><i class="bi bi-x-circle"></i></span>
+            <div class="header-container">
+                <h2>Criar Ambiente</h2>
+                <div class="header-underline"></div>
+            </div>
+            <p>Preencha os campos abaixo para realizar o cadastro de um novo ambiente.</p>
+            <form action="" class="input-group">
+                <input type="text" id="nome_ambiente" placeholder="Nome do ambiente">
+                <input type="text" id="capacidade_ambiente" placeholder="Capacidade">
+                <input type="text" id="num_ambiente" placeholder="Número ambiente">
+                <select id="tipo_ambiente_id" class="select_tipos">
+                    <option value="" selected>Tipo de ambiente</option>
+                </select>
+                 <div class="status_ambiente">
+                    <label>
+                        <input type="radio" name="status_ambiente" value="1" checked> Ativo
+                    </label>
+                    <label>
+                        <input type="radio" name="status_ambiente" value="0"> Inativo
+                    </label>
+                </div>
+            </form>
+            <div class="button-container">
+                <button id="btnCriar" class="btn-criar">Criar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalEditar" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="modalEditar"><i class="bi bi-x-circle"></i></span>
+            <div class="header-container">
+                <h2>Editar Ambientes</h2>
+                <div class="header-underline"></div>
+            </div>
+            <p>Altere os campos abaixo para atualizar o cadastro do Ambientes.</p>
+            <form id="editarAmbienteForm">
+                <input type="hidden" id="edit_ambiente_id">
+                <div class="input-group">
+                    <input type="text" id="edit_nome_ambiente" placeholder="Nome do ambiente">
+                    <input type="text" id="edit_capacidade_ambiente" placeholder="Capacidade">
+                    <input type="text" id="edit_num_ambiente" placeholder="Número ambiente">
+                    <select id="edit_tipo_ambiente_id" class="select_tipos">
+                        <option value="" selected>Tipo de ambiente</option>
+                    </select>
+                </div>
+                <div class="button-container">
+                    <button type="submit" class="btn-salvar">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../script/script_ambiente3.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>

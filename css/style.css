@@ -1,0 +1,187 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+*{
+    padding: 0;
+    margin: 0;
+}
+html{
+    height: 100vh;
+}
+.body-login{
+    height: 100%;
+    background-image: url(../login/assets/fundo.png);
+    background-position: center;
+    background-position: no-repeat;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.main-login{
+    height: 522px;
+    width: 752px;
+    border: 4px solid white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+    border-radius: 20px;
+    gap: 30px;
+}
+.titulo-login{
+    font-family: "Montserrat";
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+}
+.inps-login{
+    width: 100%;
+    font-family: "Montserrat";
+    display: flex;
+    flex-direction: column;
+    color: white;
+    align-items: end;
+}
+.inps-login a{
+    color: white;
+    text-decoration: none;
+    margin: 10px;
+}
+.inps-login a:hover{
+    color: white;
+    text-decoration: underline;
+}
+.inps-login input{
+    height: 60px;
+    width: 676px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: none;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: 500;
+    margin-top: 10px;
+}
+.inps-login input:focus{
+    outline: none;
+}
+.inps-login input::placeholder{
+    color: white;
+}
+.input-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    
+}
+
+.input-box i {
+    position: absolute;
+    left: 30px; 
+    font-size: 30px;
+    color: white;
+    top: 22px;
+}
+
+.input-box input {
+    height: 60px;
+    width: 600px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: none;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: 500;
+    padding-left: 80px;
+    color: white;
+    font-family: "Montserrat";  
+}
+.input-box input::placeholder {
+    color: white;
+}
+.input-box:focus{
+    border: none;
+}
+.enviar-login{
+    width: 100%;
+    height: 40%;
+    display: flex;
+    justify-content: center;
+    align-items:center;
+}
+.enviar-login input{
+    font-family: "Montserrat";
+    font-weight: 700;
+    height: 84px;
+    width: 346px;
+    font-size: 30px;
+    background-color: #C8000C;
+    border: 1.5px solid white;
+    border-radius: 10px;
+    color: white;
+    transition: all 0.4s ease-in-out;
+}
+.enviar-login input:hover{
+    background-color: #9A1915;
+    transform: scale(1.02);
+}
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: #d62828;
+  width: 60px; /* largura inicial só com ícones */
+  transition: width 0.3s;
+  overflow: hidden;
+}
+
+.sidebar.open {
+  width: 220px; /* largura expandida */
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 50px 0 0 0;
+}
+
+.sidebar ul li {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  color: white;
+  cursor: pointer;
+}
+
+.sidebar ul li:hover {
+  background: #b71c1c;
+}
+
+.sidebar .icon {
+  font-size: 20px;
+  min-width: 40px;
+  text-align: center;
+}
+
+.sidebar .text {
+  display: none; /* esconde o texto inicialmente */
+}
+
+.sidebar.open .text {
+  display: inline; /* mostra quando o menu abre */
+  margin-left: 10px;
+}
+
+.toggle-btn {
+  position: absolute;
+  top: 10px;
+  right: -30px;
+  background: #d62828;
+  color: white;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}

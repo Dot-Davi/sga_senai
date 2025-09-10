@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciador-SENAI</title>
+  <link rel="stylesheet" href="../css/gerenciar_cadastro.css">
+  <meta name="viewport" content="initial-scale=1, width=device-width" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+  <header>
+    <div class="menu-box" id="menu-btn">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <img class="logo_senai" src="../assets/logo_senai.png" alt="Logo SENAI">
+  </header>
+
+  <nav class="sidebar" id="sidebar">
+    <ul>
+      <li>
+        <a href="#">
+          <img src="../assets/calendar.png" alt="Ícone de calendário">
+          <span class="menu-texto">Calendário<br></span>
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <img src="../assets/profile.png" alt="Ícone de perfil">
+          <span class="menu-texto">Gerenciar<br>Cadastros</span>
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <img src="../assets/checked.png" alt="Ícone de check">
+          <span class="menu-texto">Validação<br>de Turmas</span>
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <img src="../assets/gear.png" alt="Ícone de engrenagem">
+          <span class="menu-texto">Ferramentas<br>de Gestão</span>
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <img src="../assets/alocacao.png" alt="Ícone de alocação">
+          <span class="menu-texto">Alterar<br>Alocações</span>
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <img src="../assets/report (1).png" alt="Ícone de relatório">
+          <span class="menu-texto">Gerar<br>Relatórios</span>
+        </a>
+      </li>
+      <li>
+        <a href="#">
+          <img src="../assets/account.png" alt="Ícone de conta">
+          <span class="menu-texto">Meu<br>Perfil</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <main id="conteudo-cadastro">
+    <div class="titulos">
+      <div class="gerenciar-titulo">
+        <img src="../assets/profile_red.png" alt="icone_person">
+        <h1>Gerenciador de Cadastro</h1>
+      </div>
+      <div class="docentes">
+        <h2>Ambientes</h2>
+        <hr>
+      </div>
+      <div class="sub_titulos">
+        <div class="adiconar">
+          <button id="abrirModalCriar" class="adicionar_button"><i class="bi bi-plus-circle-fill"></i>
+            Criar</button>
+        </div>
+        <div class="pesquisa">
+          <input type="text" name="" id="searchInput" placeholder="Pesquisar Ambientes...">
+          <span class="icon_pesquisa">
+            <i class="bi bi-search"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="conteudo_docente" id="lista-ambientes">
+    </div>
+  </main>
+
+  <div id="modalCriar" class="modal">
+    <div class="modal-content">
+      <span class="close" data-modal="modalCriar"><i class="bi bi-x-circle"></i></span>
+      <div class="header-container">
+        <h2>Criar Ambiente</h2>
+        <div class="header-underline"></div>
+      </div>
+      <p>Preencha os campos abaixo para realizar o cadastro de um novo ambiente.</p>
+      <form id="ambienteForm" class="input-group">
+        <input type="text" id="nome_ambiente" required placeholder="Nome do ambiente">
+        <input type="number" id="capacidade_ambiente" required placeholder="Capacidade">
+        <input type="number" id="num_ambiente" placeholder="Número ambiente">
+        <select id="tipo_ambiente_id" required class="select_tipos">
+          <option value="">Carregando tipos...</option>
+        </select>
+        <label>
+          <input type="radio" name="status_ambiente" value="1" checked>
+          <span>Ativo</span>
+        </label>
+        <label>
+          <input type="radio" name="status_ambiente" value="0">
+          <span>Inativo</span>
+        </label>
+        <div class="button-container">
+          <button type="submit" id="submitBtn" class="btn-criar">Criar</button>
+        </div>
+      </form>
+      <div id="responseArea" class="mt-8 pt-6 border-t border-gray-200 hidden">
+        <h2 class="text-xl font-bold text-gray-700 mb-4">Resposta da API</h2>
+        <div class="bg-gray-800 text-white rounded-lg p-4 overflow-x-auto">
+          <pre><code id="responseCode" class="language-json"></code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalEditar" class="modal">
+    <div class="modal-content">
+      <span class="close" data-modal="modalEditar"><i class="bi bi-x-circle"></i></span>
+      <div class="header-container">
+        <h2>Editar Ambientes</h2>
+        <div class="header-underline"></div>
+      </div>
+      <p>Altere os campos abaixo para atualizar o cadastro do Ambientes.</p>
+      <form id="editarAmbienteForm" class="input-group">
+        <input type="hidden" id="edit_ambiente_id">
+        <input type="text" id="edit_nome_ambiente" required placeholder="Nome do ambiente">
+        <input type="number" id="edit_capacidade_ambiente" required placeholder="Capacidade">
+        <input type="number" id="edit_num_ambiente" placeholder="Número ambiente">
+        <select id="edit_tipo_ambiente_id" required class="select_tipos">
+          <option value="">Carregando tipos...</option>
+        </select>
+        <label>
+          <input type="radio" name="edit_status_ambiente" value="1">
+          <span>Ativo</span>
+        </label>
+        <label>
+          <input type="radio" name="edit_status_ambiente" value="0">
+          <span>Inativo</span>
+        </label>
+        <div class="button-container">
+          <button type="submit" id="salvarEdicao" class="btn-salvar">Salvar</button>
+        </div>
+      </form>
+      <div id="editResponseArea" class="mt-8 pt-6 border-t border-gray-200 hidden">
+        <h2 class="text-xl font-bold text-gray-700 mb-4">Resposta da API</h2>
+        <div class="bg-gray-800 text-white rounded-lg p-4 overflow-x-auto">
+          <pre><code id="editResponseCode" class="language-json"></code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // DOM Elements
+    const modalCriar = document.getElementById('modalCriar');
+    const modalEditar = document.getElementById('modalEditar');
+    const abrirModalCriarBtn = document.getElementById('abrirModalCriar');
+    const fecharModalBtns = document.querySelectorAll('.close');
+
+    const tipoAmbienteSelect = document.getElementById('tipo_ambiente_id');
+    const form = document.getElementById('ambienteForm');
+    const responseArea = document.getElementById('responseArea');
+    const responseCode = document.getElementById('responseCode');
+    const listaAmbientes = document.getElementById('lista-ambientes');
+
+    // Form elements for Edit Modal
+    const editForm = document.getElementById('editarAmbienteForm');
+    const editIdInput = document.getElementById('edit_ambiente_id');
+    const editNomeInput = document.getElementById('edit_nome_ambiente');
+    const editCapacidadeInput = document.getElementById('edit_capacidade_ambiente');
+    const editNumInput = document.getElementById('edit_num_ambiente');
+    const editTipoSelect = document.getElementById('edit_tipo_ambiente_id');
+    const editStatusRadios = document.querySelectorAll('input[name="edit_status_ambiente"]');
+    const editResponseArea = document.getElementById('editResponseArea');
+    const editResponseCode = document.getElementById('editResponseCode');
+
+    // URLS da API
+    const URL_GET_TIPOS = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/tipos-ambientes';
+    const URL_GET_AMBIENTES = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/ambientes';
+    const URL_POST_AMBIENTE = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/ambientes';
+    const URL_TOGGLE_STATUS = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/ambientes/';
+    const URL_PUT_AMBIENTE = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/ambientes/';
+
+    // --- Função para criar o HTML do card a partir dos dados do ambiente ---
+    function criarCardAmbiente(ambiente) {
+      const statusText = ambiente.status_ambiente == 1 ? 'Ativo' : 'Inativo';
+      const statusClass = ambiente.status_ambiente == 1 ? 'ativo' : 'inativo';
+      const statusIconClass = ambiente.status_ambiente == 1 ? 'bi-check-circle-fill' : 'bi-x-circle';
+
+      const tipoAmbienteNome = ambiente.tipo_ambiente ? ambiente.tipo_ambiente.nome_tipo_ambiente : 'Não especificado';
+
+      return `
+                <div class="info_docente" data-id="${ambiente.id}">
+                    <div class="conteudo">
+                        <p class="nome">Nome: <b>${ambiente.nome_ambiente}</b></p>
+                        <p class="tipo"><i class="bi bi-geo-alt-fill" style="margin-right: 5px;"></i>Tipo: ${tipoAmbienteNome}</p>
+                        <p class="capacidade"><i class="bi bi-people-fill" style="margin-right: 5px;"></i>Capacidade: ${ambiente.capacidade_ambiente} pessoas</p>
+                        <p class="status"><b><i class="bi bi-arrow-clockwise" id="status_para"></i></b>Status: ${statusText}</p>
+                    </div>
+                    <div class="funcoes">
+                        <button class="editar_docente" data-id="${ambiente.id}"><i class="bi bi-pen-fill"></i>Editar </button>
+                        <button class="status_docente ${statusClass}" data-id="${ambiente.id}" data-status="${ambiente.status_ambiente}">
+                            <i class="bi ${statusIconClass}"></i>${statusText}
+                        </button>
+                    </div>
+                </div>
+            `;
+    }
+
+    // --- Função para carregar todos os ambientes da API e exibi-los ---
+    async function carregarAmbientes() {
+      try {
+        const response = await fetch(URL_GET_AMBIENTES, { headers: { 'Accept': 'application/json' } });
+        if (!response.ok) throw new Error('Falha ao carregar os ambientes.');
+        const data = await response.json();
+
+        listaAmbientes.innerHTML = '';
+
+        const ambientes = data.data || data;
+        ambientes.forEach(ambiente => {
+          const cardHTML = criarCardAmbiente(ambiente);
+          listaAmbientes.insertAdjacentHTML('beforeend', cardHTML);
+        });
+      } catch (error) {
+        console.error('Erro ao carregar ambientes:', error);
+        listaAmbientes.innerHTML = `<p style="text-align: center; color: #ff6666;">Erro ao carregar os ambientes. Tente novamente mais tarde.</p>`;
+      }
+    }
+
+    // --- Função para alternar o status do ambiente ---
+    async function toggleStatusAmbiente(ambienteId, cardElement) {
+      try {
+        const response = await fetch(`${URL_TOGGLE_STATUS}${ambienteId}/toggle-status`, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Falha ao alternar o status do ambiente.');
+        }
+
+        const responseData = await response.json();
+        const novoStatus = responseData.data.status_ambiente;
+        const novoStatusText = novoStatus == 1 ? 'Ativo' : 'Inativo';
+        const novoStatusClass = novoStatus == 1 ? 'ativo' : 'inativo';
+        const novoStatusIcon = novoStatus == 1 ? 'bi-check-circle-fill' : 'bi-x-circle';
+
+        const statusButton = cardElement.querySelector('.status_docente');
+        const statusParagraph = cardElement.querySelector('.status');
+        const statusButtonIcon = statusButton.querySelector('i');
+
+        // Atualiza a interface do usuário
+        statusParagraph.innerHTML = `<b><i class="bi bi-arrow-clockwise" id="status_para"></i></b>Status: ${novoStatusText}`;
+        statusButton.textContent = '';
+        statusButtonIcon.className = 'bi ' + novoStatusIcon;
+        statusButton.appendChild(statusButtonIcon);
+        statusButton.insertAdjacentText('beforeend', novoStatusText);
+
+        statusButton.classList.remove('ativo', 'inativo');
+        statusButton.classList.add(novoStatusClass);
+
+      } catch (error) {
+        console.error('Erro ao alternar o status:', error);
+        alert('Erro ao alterar o status do ambiente. Tente novamente.');
+      }
+    }
+
+    // --- Adiciona o event listener na lista de ambientes para capturar cliques nos botões ---
+    listaAmbientes.addEventListener('click', async (event) => {
+      const statusBtn = event.target.closest('.status_docente');
+      const editBtn = event.target.closest('.editar_docente');
+
+      if (statusBtn) {
+        const ambienteId = statusBtn.getAttribute('data-id');
+        const cardElement = statusBtn.closest('.info_docente');
+        toggleStatusAmbiente(ambienteId, cardElement);
+      }
+
+      if (editBtn) {
+        const ambienteId = editBtn.getAttribute('data-id');
+        abrirModalEditar(ambienteId);
+      }
+    });
+
+    // --- Funções para o Modal de Edição ---
+    async function carregarDadosParaEdicao(ambienteId) {
+      try {
+        const response = await fetch(`${URL_GET_AMBIENTES}/${ambienteId}`, { headers: { 'Accept': 'application/json' } });
+        if (!response.ok) throw new Error('Falha ao carregar dados do ambiente para edição.');
+        const data = await response.json();
+        const ambiente = data.data || data;
+
+        editIdInput.value = ambiente.id;
+        editNomeInput.value = ambiente.nome_ambiente;
+        editCapacidadeInput.value = ambiente.capacidade_ambiente;
+        editNumInput.value = ambiente.num_ambiente;
+        editTipoSelect.value = ambiente.tipo_ambiente_id;
+
+        // Marca o status radio button correto
+        editStatusRadios.forEach(radio => {
+          if (parseInt(radio.value) === ambiente.status_ambiente) {
+            radio.checked = true;
+          }
+        });
+
+      } catch (error) {
+        console.error('Erro ao carregar dados para edição:', error);
+        alert('Erro ao carregar dados para edição. Tente novamente.');
+      }
+    }
+
+    async function abrirModalEditar(ambienteId) {
+      await carregarTiposAmbiente(editTipoSelect); // Garante que o select está preenchido
+      await carregarDadosParaEdicao(ambienteId);
+      modalEditar.style.display = 'block';
+    }
+
+    async function handleEditFormSubmit(event) {
+      event.preventDefault();
+
+      const ambienteId = editIdInput.value;
+      const statusAmbiente = document.querySelector('input[name="edit_status_ambiente"]:checked').value;
+
+      const payload = {
+        nome_ambiente: editNomeInput.value,
+        num_ambiente: editNumInput.value || null,
+        capacidade_ambiente: parseInt(editCapacidadeInput.value),
+        tipo_ambiente_id: parseInt(editTipoSelect.value),
+        status_ambiente: parseInt(statusAmbiente),
+      };
+
+      try {
+        const response = await fetch(`${URL_PUT_AMBIENTE}${ambienteId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+        const responseData = await response.json();
+
+        if (response.ok) {
+          console.log('Ambiente editado com sucesso!');
+          modalEditar.style.display = 'none';
+          editResponseArea.style.display = 'none';
+
+          const card = document.querySelector(`.info_docente[data-id="${ambienteId}"]`);
+          if (card) {
+            const novoCardHTML = criarCardAmbiente(responseData.data);
+            card.outerHTML = novoCardHTML;
+          }
+        } else {
+          editResponseCode.textContent = JSON.stringify(responseData, null, 2);
+          editResponseArea.classList.remove('hidden');
+          editResponseArea.style.display = 'block';
+          editResponseCode.parentElement.style.backgroundColor = '#7f1d1d';
+          editResponseArea.scrollIntoView({ behavior: 'smooth' });
+        }
+      } catch (error) {
+        console.error(error);
+        editResponseCode.textContent = JSON.stringify({ error: 'Erro de rede ou falha na API.', message: error.message }, null, 2);
+        editResponseArea.classList.remove('hidden');
+        editResponseArea.style.display = 'block';
+        editResponseCode.parentElement.style.backgroundColor = '#7f1d1d';
+        editResponseArea.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    async function carregarTiposAmbiente(selectElement) {
+      try {
+        const response = await fetch(URL_GET_TIPOS, { headers: { 'Accept': 'application/json' } });
+        if (!response.ok) throw new Error('Falha ao carregar os tipos de ambiente.');
+        const data = await response.json();
+
+        selectElement.innerHTML = '<option value="">Selecione um tipo</option>';
+        const tipos = data.data || data;
+
+        tipos.forEach(tipo => {
+          const option = document.createElement('option');
+          option.value = tipo.id;
+          option.textContent = tipo.nome_tipo_ambiente;
+          selectElement.appendChild(option);
+        });
+      } catch (error) {
+        console.error(error);
+        selectElement.innerHTML = '<option value="">Erro ao carregar</option>';
+      }
+    }
+
+    // Função modificada para usar SweetAlert2
+    async function handleFormSubmit(event) {
+      event.preventDefault();
+
+      const statusAmbiente = document.querySelector('input[name="status_ambiente"]:checked').value;
+
+      const payload = {
+        nome_ambiente: document.getElementById('nome_ambiente').value,
+        num_ambiente: document.getElementById('num_ambiente').value || null,
+        capacidade_ambiente: parseInt(document.getElementById('capacidade_ambiente').value),
+        tipo_ambiente_id: parseInt(document.getElementById('tipo_ambiente_id').value),
+        status_ambiente: parseInt(statusAmbiente),
+      };
+
+      try {
+        const response = await fetch(URL_POST_AMBIENTE, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (response.ok) {
+          Swal.fire({
+            title: "Sucesso!",
+            text: "Ambiente criado com sucesso!",
+            icon: "success",
+            imageAlt: "GIF de sucesso",
+            confirmButtonText: "Ok"
+          });
+
+          form.reset();
+          responseArea.style.display = 'none';
+          modalCriar.style.display = 'none';
+          carregarAmbientes();
+        } else {
+          const responseData = await response.json();
+          const errorMessage = responseData.message || 'Ocorreu um erro ao criar o ambiente.';
+
+          Swal.fire({
+            title: "Erro!",
+            text: errorMessage,
+            icon: "error",
+            imageUrl: "https://media.giphy.com/media/l4FGxM2yQd4nC3LMs/giphy.gif",
+            imageWidth: 200,
+            imageHeight: 200,
+            imageAlt: "GIF de erro",
+            confirmButtonText: "Ok"
+          });
+        }
+      } catch (error) {
+        console.error(error);
+        Swal.fire({
+          title: "Erro de Conexão!",
+          text: "Não foi possível conectar ao servidor. Tente novamente.",
+          icon: "error",
+          imageUrl: "https://media.giphy.com/media/l4FGxM2yQd4nC3LMs/giphy.gif",
+          imageWidth: 200,
+          imageHeight: 200,
+          imageAlt: "GIF de erro",
+          confirmButtonText: "Ok"
+        });
+      }
+    }
+
+    // Funções para gerenciar o modal
+    abrirModalCriarBtn.onclick = function () {
+      modalCriar.style.display = 'block';
+      carregarTiposAmbiente(tipoAmbienteSelect);
+    }
+
+    fecharModalBtns.forEach(btn => {
+      btn.onclick = function () {
+        const modalId = this.getAttribute('data-modal');
+        document.getElementById(modalId).style.display = 'none';
+        form.reset();
+        responseArea.style.display = 'none';
+        responseCode.textContent = '';
+        editForm.reset();
+        editResponseArea.style.display = 'none';
+        editResponseCode.textContent = '';
+      }
+    });
+
+    // Event Listeners
+    window.onclick = function (event) {
+      if (event.target == modalCriar) {
+        modalCriar.style.display = 'none';
+        form.reset();
+        responseArea.style.display = 'none';
+        responseCode.textContent = '';
+      }
+      if (event.target == modalEditar) {
+        modalEditar.style.display = 'none';
+        editForm.reset();
+        editResponseArea.style.display = 'none';
+        editResponseCode.textContent = '';
+      }
+    }
+
+    form.addEventListener('submit', handleFormSubmit);
+    editForm.addEventListener('submit', handleEditFormSubmit);
+
+    // Script original do menu lateral (mantido)
+    const menuBtn = document.getElementById('menu-btn');
+    const sidebar = document.getElementById('sidebar');
+
+    menuBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+        sidebar.classList.remove('active');
+      }
+    });
+
+    const searchInput = document.getElementById('searchInput');
+
+    searchInput.addEventListener('keyup', () => {
+      const searchTerm = searchInput.value.toLowerCase().trim();
+      const ambientesCards = document.querySelectorAll('.info_docente');
+
+      ambientesCards.forEach(card => {
+        const nome = card.querySelector('.nome b').textContent.toLowerCase();
+        const tipo = card.querySelector('.tipo').textContent.toLowerCase();
+        const capacidade = card.querySelector('.capacidade').textContent.toLowerCase();
+
+        if (nome.includes(searchTerm) || tipo.includes(searchTerm) || capacidade.includes(searchTerm)) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+
+    // --- Chama a função para carregar os ambientes ao iniciar a página ---
+    document.addEventListener('DOMContentLoaded', carregarAmbientes);
+  </script>
+  <script src="../script/script_ambientes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous"></script>
+
+</body>
+
+</html>
