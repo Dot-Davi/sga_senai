@@ -1,10 +1,10 @@
-// script_ambiente3.js - versão corrigida para o botão "Salvar" do modal de edição
+// script_ambiente3.js - Versão Sem Lógica de Edição
 
 // --- Acessando os elementos do DOM ---
 const modalCriar = document.getElementById('modalCriar');
-const modalEditar = document.getElementById('modalEditar');
 const abrirModalCriarBtn = document.getElementById('abrirModal');
 const fecharModalBtns = document.querySelectorAll('.close');
+const listaAmbientes = document.getElementById('lista-ambientes');
 
 // Elementos do formulário de criação
 const formCriar = modalCriar.querySelector('form');
@@ -12,25 +12,12 @@ const nomeInputCriar = modalCriar.querySelector('#nome_ambiente');
 const capacidadeInputCriar = modalCriar.querySelector('#capacidade_ambiente');
 const numInputCriar = modalCriar.querySelector('#num_ambiente');
 const tipoAmbienteSelectCriar = modalCriar.querySelector('#tipo_ambiente_id');
-const statusRadiosCriar = modalCriar.querySelectorAll('input[name="status_ambiente"]');
-
-// Elementos do formulário de edição
-const formEditar = document.getElementById('editarAmbienteForm');
-const editIdInput = document.getElementById('edit_ambiente_id');
-const editNomeInput = document.getElementById('edit_nome_ambiente');
-const editCapacidadeInput = document.getElementById('edit_capacidade_ambiente');
-const editNumInput = document.getElementById('edit_num_ambiente');
-const editTipoSelect = document.getElementById('edit_tipo_ambiente_id');
-
-// Lista de ambientes
-const listaAmbientes = document.getElementById('lista-ambientes');
 
 // URLs da API
 const URL_GET_TIPOS = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/tipos-ambientes';
 const URL_GET_AMBIENTES = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/ambientes';
 const URL_POST_AMBIENTE = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/ambientes';
 const URL_TOGGLE_STATUS = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/ambientes/';
-const URL_PUT_AMBIENTE = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/ambientes/';
 
 // ---------- Helpers ----------
 function showSuccess(msg) {
@@ -61,7 +48,6 @@ function criarCardAmbiente(ambiente) {
                 <p class="status"><b><i class="bi bi-arrow-clockwise" id="status_para"></i></b>Status: ${statusText}</p>
             </div>
             <div class="funcoes">
-                <button class="editar_docente" data-id="${ambiente.id}"><i class="bi bi-pen-fill"></i>Editar </button>
                 <button class="status_docente ${statusClass}" data-id="${ambiente.id}" data-status="${ambiente.status_ambiente}">
                     <i class="bi ${statusIconClass}"></i>${statusText}
                 </button>
@@ -125,16 +111,14 @@ fecharModalBtns.forEach(btn => {
 
 window.addEventListener('click', (event) => {
     if (event.target == modalCriar) modalCriar.style.display = 'none';
-    if (event.target == modalEditar) modalEditar.style.display = 'none';
 });
 
 // --- Criação de ambiente ---
-const btnCriar = document.getElementById('btnCriar');
-if (btnCriar) btnCriar.addEventListener('click', handleFormSubmit);
+formCriar.addEventListener('submit', handleFormSubmitCriar);
 
-async function handleFormSubmit(event) {
+async function handleFormSubmitCriar(event) {
     event.preventDefault();
-    const selectedStatus = document.querySelector('input[name="status_ambiente"]:checked');
+    const selectedStatus = document.querySelector('input[name="status_ambiente_criar"]:checked');
     const statusAmbiente = selectedStatus ? selectedStatus.value : '1';
     const payload = {
         nome_ambiente: nomeInputCriar.value.trim(),
@@ -166,105 +150,8 @@ async function handleFormSubmit(event) {
     }
 }
 
-// --- Carregar dados para edição ---
-async function carregarDadosParaEdicao(ambienteId) {
-    try {
-        const response = await fetch(`${URL_GET_AMBIENTES}/${ambienteId}`, { headers: { 'Accept': 'application/json' } });
-        if (!response.ok) throw new Error('Falha ao carregar dados do ambiente para edição.');
-        const data = await response.json();
-        const ambiente = data.data || data;
-
-        editIdInput.value = ambiente.id;
-        editNomeInput.value = ambiente.nome_ambiente || '';
-        editCapacidadeInput.value = ambiente.capacidade_ambiente || '';
-        editNumInput.value = ambiente.num_ambiente || '';
-
-        const tipoId = ambiente.tipo_ambiente_id;
-        if (tipoId != null) {
-            let option = editTipoSelect.querySelector(`option[value="${tipoId}"]`);
-            if (!option) {
-                option = document.createElement('option');
-                option.value = tipoId;
-                option.textContent = ambiente.tipo_ambiente ? ambiente.tipo_ambiente.nome_tipo_ambiente : `Tipo ${tipoId}`;
-                editTipoSelect.appendChild(option);
-            }
-            editTipoSelect.value = tipoId;
-        } else {
-            editTipoSelect.value = '';
-        }
-    } catch (error) {
-        console.error('Erro ao carregar dados para edição:', error);
-        showError('Erro ao carregar dados para edição. Tente novamente.');
-    }
-}
-
-async function abrirModalEditar(ambienteId) {
-    await carregarTiposAmbiente(editTipoSelect).catch(()=>{ /* ignora */ });
-    await carregarDadosParaEdicao(ambienteId);
-    modalEditar.style.display = 'block';
-}
-
-// --- Envio do formulário de edição (corrigido e robusto) ---
-if (formEditar) {
-    formEditar.addEventListener('submit', handleEditFormSubmit);
-}
-
-async function handleEditFormSubmit(event) {
-    event.preventDefault();
-
-    const submitBtn = formEditar.querySelector('button[type="submit"]') || formEditar.querySelector('.btn-salvar');
-
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.dataset.originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Salvando...';
-    }
-
-    const ambienteId = editIdInput.value;
-    if (!ambienteId) {
-        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = submitBtn.dataset.originalText || 'Salvar'; }
-        return showError('ID do ambiente não encontrado. Reabra o modal e tente novamente.');
-    }
-
-    // A API foi alterada para não exigir o status na edição, então o payload agora
-    // contém apenas os dados editáveis do formulário.
-    const payload = {
-        nome_ambiente: String(editNomeInput.value || '').trim(),
-        num_ambiente: editNumInput.value || null,
-        capacidade_ambiente: safeParseInt(editCapacidadeInput.value),
-        tipo_ambiente_id: safeParseInt(editTipoSelect.value)
-    };
-
-    try {
-        const response = await fetch(`${URL_PUT_AMBIENTE}${ambienteId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(payload),
-        });
-
-        const responseData = await response.json().catch(()=>({}));
-
-        if (response.ok) {
-            showSuccess('Ambiente editado com sucesso!');
-            modalEditar.style.display = 'none';
-            await carregarAmbientes();
-        } else {
-            const errorMessage = responseData.message || 'Ocorreu um erro ao editar o ambiente.';
-            showError(errorMessage);
-        }
-    } catch (error) {
-        console.error('Erro ao enviar PUT:', error);
-        showError('Erro de rede ou falha na API. Verifique a conexão e tente novamente.');
-    } finally {
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = submitBtn.dataset.originalText || 'Salvar';
-        }
-    }
-}
-
 // --- Carrega tipos para uma select ---
-async function carregarTiposAmbiente(selectElement) {
+async function carregarTiposAmbiente(selectElement, selectedId = null) {
     try {
         const response = await fetch(URL_GET_TIPOS, { headers: { 'Accept': 'application/json' } });
         if (!response.ok) throw new Error('Falha ao carregar os tipos de ambiente.');
@@ -277,6 +164,9 @@ async function carregarTiposAmbiente(selectElement) {
                 const option = document.createElement('option');
                 option.value = tipo.id;
                 option.textContent = tipo.nome_tipo_ambiente;
+                if (selectedId && tipo.id === selectedId) {
+                    option.selected = true;
+                }
                 selectElement.appendChild(option);
             });
         }
@@ -289,16 +179,10 @@ async function carregarTiposAmbiente(selectElement) {
 // --- Event delegation para botões da lista ---
 listaAmbientes.addEventListener('click', async (event) => {
     const statusBtn = event.target.closest('.status_docente');
-    const editBtn = event.target.closest('.editar_docente');
 
     if (statusBtn) {
         const ambienteId = statusBtn.getAttribute('data-id');
         if (ambienteId) toggleStatusAmbiente(ambienteId);
-    }
-
-    if (editBtn) {
-        const ambienteId = editBtn.getAttribute('data-id');
-        if (ambienteId) abrirModalEditar(ambienteId);
     }
 });
 

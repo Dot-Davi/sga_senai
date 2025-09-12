@@ -553,10 +553,16 @@
  .select_tipos option{
     color: #000;
  }
+/* Estilo base do input color */
+#addColor {
+  -webkit-appearance: none; /* remove estilo padrão do Chrome/Safari */
+  -moz-appearance: none;    /* remove estilo padrão do Firefox */
+  appearance: none;
+  width: 10px;              /* largura igual à da foto */
+  height: 40px;             /* altura igual à da foto */
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 10px;        /* se quiser afastar dos outros inputs */
+}
 
- /* Adiciona estilo para o texto destacado */
- /* .highlight {
-     background-color: yellow;
-     font-weight: bold;
-     padding: 2px;
- } */

@@ -1,190 +1,236 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const menuBtn = document.getElementById('menu-btn');
-    const sidebar = document.getElementById('sidebar');
-    const conteudo = document.getElementById('conteudo-cadastro');
-    const searchInput = document.getElementById('searchInput');
-    let docenteCards = document.querySelectorAll('.info_docente');
-    const originalNames = {};
-    const modalCriar = document.getElementById('modalCriar');
-    const abrirModalBtn = document.getElementById('abrirModal');
-    const btnCriar = document.querySelector('.btn-criar');
-    const modalEditar = document.getElementById('modalEditar');
-    const editTipoInput = document.getElementById('editTipo'); 
-    const editCargaHorariaInput = document.getElementById('editCargaHoraria');
-    const editNomeInput = document.getElementById('editNome'); 
-    const salvarEdicaoBtn = document.getElementById('salvarEdicao');
-    let currentEditingCard = null;
+// script_cursos.js
 
-    // Função para anexar os listeners aos botões
-    function attachListenersToCards() {
-        const editButtons = document.querySelectorAll('.editar_docente');
-        const statusButtons = document.querySelectorAll('.status_docente');
-        docenteCards = document.querySelectorAll('.info_docente');
+// --- Acessando os elementos do DOM ---
+const modalCriar = document.getElementById('modalCriar');
+const abrirModalCriarBtn = document.getElementById('abrirModal');
+const fecharModalBtns = document.querySelectorAll('.close');
+const listaCursos = document.getElementById('lista-cursos');
 
-        // Listener para o botão de edição
-        editButtons.forEach(button => {
-            button.onclick = () => {
-                const card = button.closest('.info_docente');
-                currentEditingCard = card;
+// Elementos do formulário de criação
+const formCriarCurso = document.getElementById('formCriarCurso');
+const nomeInputCriar = document.getElementById('nome_curso');
+const valorInputCriar = document.getElementById('valor_curso');
+const tipoCursoSelectCriar = document.getElementById('tipo_curso_id');
+const duracaoAulaInputCriar = document.getElementById('duracao_aula');
+const corInputCriar = document.getElementById('cor_curso');
 
-                const nome = card.querySelector('.nome b').textContent.trim();
-                const tipo = card.querySelector('.tipo').textContent.split(': ')[1].trim();
-                const cargaHoraria = card.querySelector('.carga_horaria').textContent.split(': ')[1].trim();
+// URLs da API
+// URL atualizada para o endpoint de categorias de curso
+const URL_GET_TIPOS = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/categorias-cursos'; 
+const URL_GET_CURSOS = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/cursos';
+const URL_POST_CURSO = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/cursos';
+const URL_TOGGLE_STATUS = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/cursos/';
 
-                editNomeInput.value = nome;
-                editTipoInput.value = tipo;
-                editCargaHorariaInput.value = cargaHoraria;
+// ---------- Helpers ----------
+function showSuccess(msg) {
+    Swal.fire({ title: "Sucesso!", text: msg, icon: "success", confirmButtonText: "Ok" });
+}
+function showError(msg) {
+    Swal.fire({ title: "Erro!", text: msg, icon: "error", confirmButtonText: "Ok" });
+}
+function safeParseInt(val) {
+    if (val === null || val === undefined || val === '') return null;
+    const p = parseInt(val);
+    return Number.isNaN(p) ? null : p;
+}
+function safeParseFloat(val) {
+    if (val === null || val === undefined || val === '') return null;
+    const p = parseFloat(val);
+    return Number.isNaN(p) ? null : p;
+}
 
-                modalEditar.style.display = 'block';
-            };
-        });
+// --- Cria o HTML do card do curso ---
+function criarCardCurso(curso) {
+    const statusText = curso.status_curso == 1 ? 'Ativo' : 'Inativo';
+    const statusClass = curso.status_curso == 1 ? 'ativo' : 'inativo';
+    const statusIconClass = curso.status_curso == 1 ? 'bi-check-circle-fill' : 'bi-x-circle';
+    const tipoCursoNome = curso.categoria_curso ? curso.categoria_curso.nome_categoria_curso : 'Não especificado';
 
-        // Listener para o botão de status
-        statusButtons.forEach(button => {
-            button.onclick = () => {
-                const statusTextElement = button.closest('.info_docente').querySelector('.status');
-                
-                if (button.classList.contains('inativo')) {
-                    button.classList.remove('inativo');
-                    button.classList.add('ativo');
-                    button.innerHTML = '<i class="bi bi-check-circle-fill"></i>Ativo';
-                    statusTextElement.innerHTML = `<b><i class="bi bi-arrow-clockwise"></i></b>Status: Ativo`;
-                } else {
-                    button.classList.remove('ativo');
-                    button.classList.add('inativo');
-                    button.innerHTML = '<i class="bi bi-x-circle"></i>Inativo';
-                    statusTextElement.innerHTML = `<b><i class="bi bi-arrow-clockwise"></i></b>Status: Inativo`;
-                }
-            };
-        });
+    return `
+        <div class="info_docente" data-id="${curso.id}">
+            <div class="conteudo">
+                <p class="nome">Nome: <b>${curso.nome_curso}</b></p>
+                <p class="valor"><i class="bi bi-currency-dollar" style="margin-right: 5px;"></i>Valor: R$ ${curso.valor_curso}</p>
+                <p class="tipo"><i class="bi bi-book-fill" style="margin-right: 5px;"></i>Tipo: ${tipoCursoNome}</p>
+                <p class="duracao_aula"><i class="bi bi-alarm" style="margin-right: 5px;"></i>Duração da Aula: ${curso.duracao_aula}min</p>
+                <p class="cor_curso"> <i class="bi bi-pencil-fill" style="margin-right: 5px;"></i>Cor do curso: ${curso.cor_curso}</p>
+                <p class="status"><b><i class="bi bi-arrow-clockwise" id="status_para"></i></b>Status: ${statusText}</p>
+            </div>
+            <div class="funcoes_curso">
+                <button class="status_docente ${statusClass}" data-id="${curso.id}" data-status="${curso.status_curso}">
+                    <i class="bi ${statusIconClass}"></i>${statusText}
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+// --- Carregar cursos ---
+async function carregarCursos() {
+    try {
+        const response = await fetch(URL_GET_CURSOS, { headers: { 'Accept': 'application/json' } });
+        if (!response.ok) throw new Error('Falha ao carregar os cursos.');
+        const data = await response.json();
+        listaCursos.innerHTML = '';
+        const cursos = data.data || data;
+        if (cursos && cursos.length > 0) {
+            cursos.forEach(curso => {
+                const cardHTML = criarCardCurso(curso);
+                listaCursos.insertAdjacentHTML('beforeend', cardHTML);
+            });
+        } else {
+            listaCursos.innerHTML = `<p style="text-align: center; color: #8C8C8C;">Nenhum curso encontrado.</p>`;
+        }
+    } catch (error) {
+        console.error('Erro ao carregar cursos:', error);
+        listaCursos.innerHTML = `<p style="text-align: center; color: #ff6666;">Erro ao carregar os cursos. Tente novamente mais tarde.</p>`;
     }
+}
 
-    // Anexa os listeners aos cards iniciais
-    attachListenersToCards();
+// --- Toggle status ---
+async function toggleStatusCurso(cursoId) {
+    try {
+        const response = await fetch(`${URL_TOGGLE_STATUS}${cursoId}/toggle-status`, {
+            method: 'POST',
+            headers: { 'Accept': 'application/json' },
+        });
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || 'Falha ao alternar o status do curso.');
+        }
+        await carregarCursos();
+    } catch (error) {
+        console.error('Erro ao alternar o status:', error);
+        showError(error.message || 'Erro ao alterar o status do curso. Tente novamente.');
+    }
+}
 
-    docenteCards.forEach(card => {
-        const nomeElement = card.querySelector('.nome b');
-        originalNames[nomeElement.textContent.trim()] = nomeElement.textContent;
+// --- Modais ---
+abrirModalCriarBtn.addEventListener('click', async () => {
+    await carregarTiposCurso(tipoCursoSelectCriar);
+    modalCriar.style.display = 'block';
+});
+
+fecharModalBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const modal = document.getElementById(btn.getAttribute('data-modal'));
+        if (modal) modal.style.display = 'none';
     });
+});
 
-    // --- Funcionalidade do Menu Lateral ---
+window.addEventListener('click', (event) => {
+    if (event.target == modalCriar) modalCriar.style.display = 'none';
+});
+
+// --- Criação de curso ---
+formCriarCurso.addEventListener('submit', handleFormSubmitCriar);
+
+async function handleFormSubmitCriar(event) {
+    event.preventDefault();
+
+    const payload = {
+        nome_curso: nomeInputCriar.value.trim(),
+        valor_curso: safeParseFloat(valorInputCriar.value),
+        tipo_curso_id: safeParseInt(tipoCursoSelectCriar.value),
+        duracao_aula: safeParseInt(duracaoAulaInputCriar.value),
+        cor_curso: corInputCriar.value.trim(),
+        status_curso: 1
+    };
+    
+    // Validação básica dos campos
+    if (!payload.nome_curso || !payload.valor_curso || !payload.tipo_curso_id || !payload.duracao_aula) {
+        showError('Por favor, preencha todos os campos obrigatórios.');
+        return;
+    }
+    
+    try {
+        const response = await fetch(URL_POST_CURSO, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        
+        if (response.ok) {
+            showSuccess('Curso criado com sucesso!');
+            formCriarCurso.reset();
+            modalCriar.style.display = 'none';
+            carregarCursos();
+        } else {
+            const responseData = await response.json().catch(() => ({}));
+            const errorMessage = responseData.message || 'Ocorreu um erro ao criar o curso.';
+            showError(errorMessage);
+        }
+    } catch (error) {
+        console.error(error);
+        showError('Erro de rede ou falha na API. Verifique a conexão e tente novamente.');
+    }
+}
+
+// --- Carrega tipos de curso para a select ---
+async function carregarTiposCurso(selectElement) {
+    try {
+        const response = await fetch(URL_GET_TIPOS, { headers: { 'Accept': 'application/json' } });
+        if (!response.ok) throw new Error('Falha ao carregar as categorias de curso.');
+        const data = await response.json();
+
+        selectElement.innerHTML = '<option value="">Selecione uma categoria</option>';
+        const tipos = data.data || data;
+        if (Array.isArray(tipos)) {
+            tipos.forEach(tipo => {
+                const option = document.createElement('option');
+                option.value = tipo.id;
+                option.textContent = tipo.nome_categoria_curso; // Altera aqui o campo de nome
+                selectElement.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        selectElement.innerHTML = '<option value="">Erro ao carregar</option>';
+    }
+}
+
+// --- Event delegation para botões da lista ---
+listaCursos.addEventListener('click', async (event) => {
+    const statusBtn = event.target.closest('.status_docente');
+
+    if (statusBtn) {
+        const cursoId = statusBtn.getAttribute('data-id');
+        if (cursoId) toggleStatusCurso(cursoId);
+    }
+});
+
+// --- Ao carregar a página ---
+document.addEventListener('DOMContentLoaded', () => {
+    carregarCursos();
+});
+
+// --- Menu lateral e pesquisa ---
+const menuBtn = document.getElementById('menu-btn');
+const sidebar = document.getElementById('sidebar');
+const mainContent = document.querySelector('main');
+if (menuBtn) {
     menuBtn.addEventListener('click', () => {
-        menuBtn.classList.toggle('active');
         sidebar.classList.toggle('active');
-        conteudo.classList.toggle('push');
+        menuBtn.classList.toggle('active');
+        mainContent.classList.toggle('push');
     });
+}
 
-    // --- Funcionalidade de Pesquisa de Docentes com Realce ---
-    searchInput.addEventListener('input', (event) => {
-        const searchTerm = event.target.value.toLowerCase();
-        docenteCards.forEach(card => {
-            const nomeElement = card.querySelector('.nome b');
-            const originalName = originalNames[nomeElement.textContent.trim()] || nomeElement.textContent;
-            const nomeDocente = originalName.toLowerCase();
-
-            nomeElement.innerHTML = originalName;
-
-            if (searchTerm === '') {
-                card.style.display = 'flex';
-            } else if (nomeDocente.includes(searchTerm)) {
-                const startIndex = nomeDocente.indexOf(searchTerm);
-                const endIndex = startIndex + searchTerm.length;
-                const antes = originalName.substring(0, startIndex);
-                const durante = originalName.substring(startIndex, endIndex);
-                const depois = originalName.substring(endIndex);
-
-                nomeElement.innerHTML = `${antes}<span class="highlight">${durante}</span>${depois}`;
+const searchInput = document.getElementById('searchInput');
+if (searchInput) {
+    searchInput.addEventListener('keyup', () => {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const cursosCards = document.querySelectorAll('.info_docente');
+        cursosCards.forEach(card => {
+            const nome = (card.querySelector('.nome b')?.textContent || '').toLowerCase();
+            const tipoElement = card.querySelector('.tipo');
+            const tipo = (tipoElement ? tipoElement.textContent : '').toLowerCase();
+            const duracaoAula = (card.querySelector('.duracao_aula')?.textContent || '').toLowerCase();
+            if (nome.includes(searchTerm) || tipo.includes(searchTerm) || duracaoAula.includes(searchTerm)) {
                 card.style.display = 'flex';
             } else {
                 card.style.display = 'none';
             }
         });
     });
-
-    // --- Funcionalidade do Modal de Criação ---
-    abrirModalBtn.addEventListener('click', () => {
-        modalCriar.style.display = 'block';
-    });
-
-    // --- Funcionalidade de Criar Novo Docente ---
-    btnCriar.addEventListener('click', () => {
-        const addNome = document.getElementById('addNome').value.trim();
-        const addCargaHoraria = document.getElementById('addCargaHoraria').value.trim();
-        const addTipo = document.getElementById('addTipo').value.trim();
-
-        if (addNome === '' || addCargaHoraria === '' || addTipo === '') {
-            console.error("Por favor, preencha todos os campos.");
-            return;
-        }
-
-        // Cria o novo elemento HTML para o card
-        const newCard = document.createElement('div');
-        newCard.classList.add('info_docente');
-        newCard.innerHTML = `
-            <div class="conteudo">
-                <p class="nome">Nome: <b>${addNome}</b></p>
-                <p class="especialidade carga_horaria"> <b><i class="bi bi-stopwatch"></i></b>Carga Horária: ${addCargaHoraria}</p>
-                <p class="tipo"> <b><i class="bi bi-pc-display-horizontal" style="margin-right: 5px;"></i></b>Tipo: ${addTipo}</p>
-                <p class="status"><b><i class="bi bi-arrow-clockwise" id="status_para"></i></b>Status: Inativo</p>
-            </div>
-            <div class="funcoes_curso">
-                <div class="buttons_curso">
-                    <button class="editar_docente"><i class="bi bi-pen-fill"></i>Editar </button>
-                    <button class="status_docente inativo"><i class="bi bi-x-circle"></i>Inativo</button>
-                </div>
-                <div class="buttons_curso">
-                    <button class="horario"><i class="bi bi-x-circle"></i>Duração de aula: 55min</button>
-                </div>
-            </div>
-        `;
-
-        // Adiciona o novo card ao contêiner de docentes
-        document.querySelector('.conteudo_docente').appendChild(newCard);
-
-        // Adiciona o nome do novo card para a funcionalidade de pesquisa
-        originalNames[addNome] = `Nome: <b>${addNome}</b>`;
-
-        // Anexa os listeners aos novos botões criados
-        attachListenersToCards();
-
-        // Limpa os campos e fecha o modal
-        document.getElementById('addNome').value = '';
-        document.getElementById('addCargaHoraria').value = '';
-        document.getElementById('addTipo').value = '';
-        modalCriar.style.display = 'none';
-    });
-
-    // --- Funcionalidade do Modal de Edição ---
-    salvarEdicaoBtn.addEventListener('click', () => {
-        if (currentEditingCard) {
-            const novoNome = editNomeInput.value;
-            const novoTipo = editTipoInput.value;
-            const novaCargaHoraria = editCargaHorariaInput.value;
-            
-            // Updates the course card with the new values
-            currentEditingCard.querySelector('.nome b').textContent = novoNome;
-            currentEditingCard.querySelector('.tipo').innerHTML = `<b><i class="bi bi-pc-display-horizontal" style="margin-right: 5px;"></i></b>Tipo: ${novoTipo}`;
-            currentEditingCard.querySelector('.carga_horaria').innerHTML = `<b><i class="bi bi-stopwatch"></i></b>Carga Horária: ${novaCargaHoraria}`;
-            
-            modalEditar.style.display = 'none';
-            currentEditingCard = null;
-        }
-    });
-
-    // --- Fechar Modais ---
-    document.querySelectorAll('.close').forEach(closeButton => {
-        closeButton.addEventListener('click', () => {
-            const modalId = closeButton.getAttribute('data-modal');
-            document.getElementById(modalId).style.display = 'none';
-        });
-    });
-
-    window.addEventListener('click', (event) => {
-        if (event.target === modalCriar) {
-            modalCriar.style.display = 'none';
-        }
-        if (event.target === modalEditar) {
-            modalEditar.style.display = 'none';
-        }
-    });
-});
+}
