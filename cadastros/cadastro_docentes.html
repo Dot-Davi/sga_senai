@@ -75,8 +75,8 @@
                 <img src="../assets/profile_red.png" alt="icone_person">
                 <h1>Gerenciador de Cadastro</h1>
             </div>
-            <div class="docentes">
-                <h2>Docentes</h2>
+            <div class="Colaborador">
+                <h2>Colaboradores</h2>
                 <hr>
             </div>
             <div class="sub_titulos">
@@ -85,45 +85,45 @@
                         Criar</button>
                 </div>
                 <div class="pesquisa">
-                    <input type="text" name="" id="searchInput" placeholder="Pesquisar Docente...">
+                    <input type="text" name="" id="searchInput" placeholder="Pesquisar Colaboradores...">
                     <span class="icon_pesquisa">
                         <i class="bi bi-search"></i>
                     </span>
                 </div>
             </div>
         </div>
-        <div class="conteudo_docente">
-            <div class="info_docente">
+        <div class="conteudo_colaborador">
+            <div class="info_colaborador">
                 <div class="conteudo">
                     <p class="nome">Nome: <b>Hermilo Alves de Lunas </b></p>
                     <p class="especialidade"> <b><i class="bi bi-briefcase-fill"></i></b>Especialidade: Técnico em Informática</p>
                     <p class="status"><b><i class="bi bi-arrow-clockwise" id="status_para"></i></b>Status: Inativo</p>
                 </div>
                 <div class="funcoes">
-                    <button class="editar_docente"><i class="bi bi-pen-fill"></i>Editar </button>
-                    <button class="status_docente inativo"><i class="bi bi-x-circle"></i>Inativo</button>
+                    <button class="editar_colaborador"><i class="bi bi-pen-fill"></i>Editar </button>
+                    <button class="status_colaborador inativo"><i class="bi bi-x-circle"></i>Inativo</button>
                 </div>
             </div>
-            <div class="info_docente">
+            <div class="info_colaborador">
                 <div class="conteudo">
                     <p class="nome">Nome: <b>Marcos Reis Ferreira</b></p>
                     <p class="especialidade"> <b><i class="bi bi-briefcase-fill"></i></b>Especialidade: Técnico em Informática</p>
                     <p class="status"><b><i class="bi bi-arrow-clockwise" id="status_para"></i></b>Status: Inativo</p>
                 </div>
                 <div class="funcoes">
-                    <button class="editar_docente"><i class="bi bi-pen-fill"></i>Editar </button>
-                    <button class="status_docente inativo"><i class="bi bi-x-circle"></i>Inativo</button>
+                    <button class="editar_colaborador"><i class="bi bi-pen-fill"></i>Editar </button>
+                    <button class="status_colaborador inativo"><i class="bi bi-x-circle"></i>Inativo</button>
                 </div>
             </div>
-            <div class="info_docente">
+            <div class="info_colaborador">
                 <div class="conteudo">
                     <p class="nome">Nome: <b>Kaue Hoffer Consorte</b></p>
                     <p class="especialidade"> <b><i class="bi bi-briefcase-fill"></i></b>Especialidade: Técnico em Informática</p>
                     <p class="status"><b><i class="bi bi-arrow-clockwise" id="status_para"></i></b>Status: Inativo</p>
                 </div>
                 <div class="funcoes">
-                    <button class="editar_docente"><i class="bi bi-pen-fill"></i>Editar </button>
-                    <button class="status_docente inativo"><i class="bi bi-x-circle"></i>Inativo</button>
+                    <button class="editar_colaborador"><i class="bi bi-pen-fill"></i>Editar </button>
+                    <button class="status_colaborador inativo"><i class="bi bi-x-circle"></i>Inativo</button>
                 </div>
             </div>
         </div>
@@ -133,14 +133,29 @@
         <div class="modal-content">
             <span class="close" data-modal="modalCriar"><i class="bi bi-x-circle"></i></span>
             <div class="header-container">
-                <h2>Criar Docente</h2>
+                <h2>Criar Colaborador</h2>
                 <div class="header-underline"></div>
             </div>
-            <p>Preencha os campos abaixo para realizar o cadastro de um novo docente.</p>
+            <p>Preencha os campos abaixo para realizar o cadastro de um novo colaborador.</p>
             <div class="input-group">
-                <input type="text" id="addNome" placeholder="Nome do docente">
+                <input type="text" id="addNome" placeholder="Nome do Colaborador">
                 <input type="text" id="addEspecialidade" placeholder="Especialidades">
-                 <input type="color">
+                <label for="cor_curso" class="label-cor">
+                    Escolha sua cor
+                    <div id="cor-quadrado" class="cor-quadrado"></div>
+                    <input type="color" id="cor_curso" class="input-cor-oculto">
+                </label>
+                <div class="status_ambiente">
+                    <label>
+                        <input type="radio" name="status_ambiente" value="1" checked> Ativo
+                    </label>
+                    <label>
+                        <input type="radio" name="status_ambiente" value="0"> Inativo
+                    </label>
+                </div>
+                <select name="" id="">
+                    <option value="Tipo Colaborador"></option>
+                </select>
             </div>
             <div class="button-container">
                 <button class="btn-criar">Criar</button>
@@ -152,10 +167,10 @@
         <div class="modal-content">
             <span class="close" data-modal="modalEditar"><i class="bi bi-x-circle"></i></span>
             <div class="header-container">
-                <h2>Editar Docentes</h2>
+                <h2>Editar Colaborador</h2>
                 <div class="header-underline"></div>
             </div>
-            <p>Altere os campos abaixo para atualizar o cadastro do docentes.</p>
+            <p>Altere os campos abaixo para atualizar o cadastro do olaboradores.</p>
             <forms action="" class="input-group">
                 <input type="text" id="editNome" placeholder="Nome">
                 <input type="text" id="editEspecialidade" placeholder="Especialidade">

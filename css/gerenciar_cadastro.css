@@ -186,7 +186,7 @@
      height: 40px;
  }
 
- .docentes {
+ .colaborador {
      display: flex;
      flex-direction: column;
      color: #8C8C8C;
@@ -194,11 +194,11 @@
      font-size: 20px;
  }
 
- .docentes h2 {
+ .colaborador h2 {
      margin-bottom: 0;
  }
 
- .docentes hr {
+ .colaborador hr {
      border: none;
      border-top: 4px solid #000000;
      width: 30%;
@@ -376,7 +376,7 @@
      transform: scale(1.1);
  }
 
- .conteudo_docente {
+ .conteudo_colaborador {
      height: 100%;
      width: 100%;
      display: flex;
@@ -386,7 +386,7 @@
      margin: 10px;
  }
 
- .info_docente {
+ .info_colaborador {
      width: 32%;
      height: auto;
      min-height: 200px;
@@ -399,7 +399,7 @@
  }
 
  @media (max-width: 768px) {
-     .info_docente {
+     .info_colaborador {
          width: 100%;
      }
  }
@@ -431,7 +431,7 @@
      gap: 20px;
  }
 
- .funcoes .editar_docente {
+ .funcoes .editar_colaborador {
      height: 45px;
      width: auto;
      padding: 0 20px;
@@ -445,7 +445,7 @@
      gap: 10px;
  }
 
- .funcoes .status_docente {
+ .funcoes .status_colaborador {
      height: 45px;
      width: auto;
      padding: 0 20px;
@@ -458,7 +458,7 @@
      gap: 10px;
      transition: background-color 0.3s ease;
  }
- .funcoes_curso .editar_docente {
+ .funcoes_curso .editar_colaborador {
      height: 45px;
      width: auto;
      padding: 0 20px;
@@ -472,7 +472,7 @@
      gap: 10px;
  }
 
- .funcoes_curso .status_docente {
+ .funcoes_curso .status_colaborador {
      height: 45px;
      width: auto;
      padding: 0 20px;
@@ -487,18 +487,18 @@
  }
  
 
- .funcoes .status_docente.inativo {
+ .funcoes .status_colaborador.inativo {
      background-color: #E1303A;
  }
 
- .funcoes .status_docente.ativo {
+ .funcoes .status_colaborador.ativo {
      background-color: #28a745;
  }
- .funcoes_curso .status_docente.inativo {
+ .funcoes_curso .status_colaborador.inativo {
      background-color: #E1303A;
  }
 
- .funcoes_curso .status_docente.ativo {
+ .funcoes_curso .status_colaborador.ativo {
      background-color: #28a745;
  }
  .status_ambiente{
@@ -518,8 +518,8 @@
     gap:10px;
     margin: 20px;
  }
- .editar_docente:hover,
- .status_docente:hover {
+ .editar_colaborador:hover,
+ .status_colaborador:hover {
      transform: scale(1.05);
      transition: all 0.5s;
  }
@@ -564,5 +564,40 @@
   cursor: pointer;
   padding: 0;
   margin-left: 10px;        /* se quiser afastar dos outros inputs */
+}
+/* Seu arquivo CSS */
+
+/* Estilos para o container do input de cor */
+.label-cor {
+    width: 45%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px; /* Espaço entre o texto e o quadrado */
+    cursor: pointer;
+    font-size: 18px;
+    color: #aaa;
+    margin-top: 10px;
+    border: none;
+    border-bottom:1px solid #aaa;
+}
+
+/* Estilos para o quadrado que vai exibir a cor */
+.cor-quadrado {
+    width: 35px;
+    height: 35px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    background-color: #000000; /* Cor inicial, pode ser a mesma do input */
+    transition: background-color 0.3s ease;
+}
+
+/* Esconde o input de cor original, mas o mantém clicável */
+.input-cor-oculto {
+    opacity: 0;
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
 }
 

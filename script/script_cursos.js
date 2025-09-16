@@ -2,6 +2,7 @@
 
 // --- Acessando os elementos do DOM ---
 const modalCriar = document.getElementById('modalCriar');
+const modalEditar = document.getElementById('modalEditar');
 const abrirModalCriarBtn = document.getElementById('abrirModal');
 const fecharModalBtns = document.querySelectorAll('.close');
 const listaCursos = document.getElementById('lista-cursos');
@@ -13,13 +14,25 @@ const valorInputCriar = document.getElementById('valor_curso');
 const tipoCursoSelectCriar = document.getElementById('tipo_curso_id');
 const duracaoAulaInputCriar = document.getElementById('duracao_aula');
 const corInputCriar = document.getElementById('cor_curso');
+const corQuadrado = document.getElementById('cor-quadrado');
+
+// Elementos do formulário de edição (Adicionados para futura implementação)
+const formEditarCurso = document.getElementById('formEditarCurso');
+const editIdCurso = document.getElementById('edit_id_curso');
+const editNomeCurso = document.getElementById('edit_nome_curso');
+const editValorCurso = document.getElementById('edit_valor_curso');
+const editTipoCurso = document.getElementById('edit_tipo_curso_id');
+const editDuracaoAula = document.getElementById('edit_duracao_aula');
+const editCorCurso = document.getElementById('edit_cor_curso');
+const editCorQuadrado = document.getElementById('edit-cor-quadrado');
 
 // URLs da API
-// URL atualizada para o endpoint de categorias de curso
-const URL_GET_TIPOS = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/categorias-cursos'; 
-const URL_GET_CURSOS = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/cursos';
-const URL_POST_CURSO = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/cursos';
-const URL_TOGGLE_STATUS = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/cursos/';
+const URL_BASE = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/';
+const URL_GET_TIPOS = `${URL_BASE}categorias-cursos`;
+const URL_GET_CURSOS = `${URL_BASE}cursos`;
+const URL_POST_CURSO = `${URL_BASE}cursos`;
+const URL_TOGGLE_STATUS = `${URL_BASE}cursos/`;
+const URL_PUT_CURSO = `${URL_BASE}cursos/`;
 
 // ---------- Helpers ----------
 function showSuccess(msg) {
@@ -40,6 +53,7 @@ function safeParseFloat(val) {
 }
 
 // --- Cria o HTML do card do curso ---
+// Esta função foi alterada para combinar com a imagem.
 function criarCardCurso(curso) {
     const statusText = curso.status_curso == 1 ? 'Ativo' : 'Inativo';
     const statusClass = curso.status_curso == 1 ? 'ativo' : 'inativo';
@@ -50,15 +64,14 @@ function criarCardCurso(curso) {
         <div class="info_docente" data-id="${curso.id}">
             <div class="conteudo">
                 <p class="nome">Nome: <b>${curso.nome_curso}</b></p>
-                <p class="valor"><i class="bi bi-currency-dollar" style="margin-right: 5px;"></i>Valor: R$ ${curso.valor_curso}</p>
-                <p class="tipo"><i class="bi bi-book-fill" style="margin-right: 5px;"></i>Tipo: ${tipoCursoNome}</p>
-                <p class="duracao_aula"><i class="bi bi-alarm" style="margin-right: 5px;"></i>Duração da Aula: ${curso.duracao_aula}min</p>
-                <p class="cor_curso"> <i class="bi bi-pencil-fill" style="margin-right: 5px;"></i>Cor do curso: ${curso.cor_curso}</p>
-                <p class="status"><b><i class="bi bi-arrow-clockwise" id="status_para"></i></b>Status: ${statusText}</p>
+                <p class="duracao"><i class="bi bi-clock-history"></i> Carga Horária: ${curso.duracao_aula}h</p>
+                <p class="tipo"><i class="bi bi-pc-display"></i>Tipo: ${tipoCursoNome}</p>
+                <p class="status"><i class="bi bi-gear-fill"></i>Status: ${statusText}</p>
             </div>
             <div class="funcoes_curso">
+                <button class="editar_curso" data-id="${curso.id}"><i class="bi bi-pen-fill"></i> Editar</button>
                 <button class="status_docente ${statusClass}" data-id="${curso.id}" data-status="${curso.status_curso}">
-                    <i class="bi ${statusIconClass}"></i>${statusText}
+                    <i class="bi ${statusIconClass}"></i> ${statusText}
                 </button>
             </div>
         </div>
@@ -120,6 +133,7 @@ fecharModalBtns.forEach(btn => {
 
 window.addEventListener('click', (event) => {
     if (event.target == modalCriar) modalCriar.style.display = 'none';
+    if (event.target == modalEditar) modalEditar.style.display = 'none';
 });
 
 // --- Criação de curso ---
@@ -130,15 +144,13 @@ async function handleFormSubmitCriar(event) {
 
     const payload = {
         nome_curso: nomeInputCriar.value.trim(),
-        valor_curso: safeParseFloat(valorInputCriar.value),
         tipo_curso_id: safeParseInt(tipoCursoSelectCriar.value),
         duracao_aula: safeParseInt(duracaoAulaInputCriar.value),
-        cor_curso: corInputCriar.value.trim(),
+        // Removidos 'valor_curso' e 'cor_curso' conforme a imagem.
         status_curso: 1
     };
     
-    // Validação básica dos campos
-    if (!payload.nome_curso || !payload.valor_curso || !payload.tipo_curso_id || !payload.duracao_aula) {
+    if (!payload.nome_curso || !payload.tipo_curso_id || !payload.duracao_aula) {
         showError('Por favor, preencha todos os campos obrigatórios.');
         return;
     }
@@ -166,6 +178,68 @@ async function handleFormSubmitCriar(event) {
     }
 }
 
+// --- Edição de curso ---
+async function carregarDadosParaEdicao(cursoId) {
+    try {
+        const response = await fetch(`${URL_GET_CURSOS}/${cursoId}`, { headers: { 'Accept': 'application/json' } });
+        if (!response.ok) throw new Error('Falha ao carregar dados do curso para edição.');
+        const data = await response.json();
+        const curso = data.data || data;
+
+        // Preenche os campos do formulário de edição
+        editIdCurso.value = curso.id;
+        editNomeCurso.value = curso.nome_curso;
+        editTipoCurso.value = curso.tipo_curso_id;
+        editDuracaoAula.value = curso.duracao_aula;
+        // Campos 'valor_curso' e 'cor_curso' removidos da edição
+    } catch (error) {
+        console.error('Erro ao carregar dados para edição:', error);
+        showError('Erro ao carregar dados para edição. Tente novamente.');
+    }
+}
+
+async function abrirModalEditar(cursoId) {
+    await carregarTiposCurso(editTipoCurso);
+    await carregarDadosParaEdicao(cursoId);
+    modalEditar.style.display = 'block';
+}
+
+if (formEditarCurso) {
+    formEditarCurso.addEventListener('submit', handleEditFormSubmit);
+}
+
+async function handleEditFormSubmit(event) {
+    event.preventDefault();
+
+    const cursoId = editIdCurso.value;
+    const payload = {};
+
+    if (editNomeCurso.value) payload.nome_curso = editNomeCurso.value;
+    if (editTipoCurso.value) payload.tipo_curso_id = safeParseInt(editTipoCurso.value);
+    if (editDuracaoAula.value) payload.duracao_aula = safeParseInt(editDuracaoAula.value);
+    
+    try {
+        const response = await fetch(`${URL_PUT_CURSO}${cursoId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        const responseData = await response.json();
+
+        if (response.ok) {
+            showSuccess('Curso editado com sucesso!');
+            modalEditar.style.display = 'none';
+            carregarCursos();
+        } else {
+            const errorMessage = responseData.message || 'Ocorreu um erro ao editar o curso.';
+            showError(errorMessage);
+        }
+    } catch (error) {
+        console.error(error);
+        showError('Erro de rede ou falha na API. Verifique a conexão e tente novamente.');
+    }
+}
+
 // --- Carrega tipos de curso para a select ---
 async function carregarTiposCurso(selectElement) {
     try {
@@ -179,7 +253,7 @@ async function carregarTiposCurso(selectElement) {
             tipos.forEach(tipo => {
                 const option = document.createElement('option');
                 option.value = tipo.id;
-                option.textContent = tipo.nome_categoria_curso; // Altera aqui o campo de nome
+                option.textContent = tipo.nome_categoria_curso;
                 selectElement.appendChild(option);
             });
         }
@@ -192,10 +266,16 @@ async function carregarTiposCurso(selectElement) {
 // --- Event delegation para botões da lista ---
 listaCursos.addEventListener('click', async (event) => {
     const statusBtn = event.target.closest('.status_docente');
+    const editBtn = event.target.closest('.editar_curso');
 
     if (statusBtn) {
         const cursoId = statusBtn.getAttribute('data-id');
         if (cursoId) toggleStatusCurso(cursoId);
+    }
+    
+    if (editBtn) {
+        const cursoId = editBtn.getAttribute('data-id');
+        abrirModalEditar(cursoId);
     }
 });
 
@@ -232,5 +312,36 @@ if (searchInput) {
                 card.style.display = 'none';
             }
         });
+    });
+}
+
+// --- Código para o input de cor e o quadrado visual no modal de criação ---
+if (corInputCriar && corQuadrado) {
+    // Ao carregar o modal, sincroniza a cor inicial do quadrado com o valor do input
+    abrirModalCriarBtn.addEventListener('click', () => {
+        corQuadrado.style.backgroundColor = corInputCriar.value;
+    });
+
+    // Quando o usuário muda a cor no input, atualiza o quadrado
+    corInputCriar.addEventListener('input', (event) => {
+        const corHex = event.target.value;
+        corQuadrado.style.backgroundColor = corHex;
+    });
+
+    // Torna o quadrado clicável para abrir o seletor de cor
+    corQuadrado.addEventListener('click', () => {
+        corInputCriar.click();
+    });
+}
+
+// --- Código para o input de cor e o quadrado visual no modal de edição ---
+if (editCorCurso && editCorQuadrado) {
+    editCorCurso.addEventListener('input', (event) => {
+        const corHex = event.target.value;
+        editCorQuadrado.style.backgroundColor = corHex;
+    });
+    
+    editCorQuadrado.addEventListener('click', () => {
+        editCorCurso.click();
     });
 }

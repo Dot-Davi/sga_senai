@@ -94,7 +94,7 @@
             </div>
         </div>
         <div class="conteudo_docente" id="lista-cursos">
-            </div>
+        </div>
     </main>
 
     <div id="modalCriar" class="modal">
@@ -112,10 +112,19 @@
                     <select name="tipo_curso_id" id="tipo_curso_id" class="select_tipos" required>
                         <option value="" selected>Selecione um tipo</option>
                     </select>
-                    <input type="number" id="duracao_aula" placeholder="Duração da Aula (min)" required>
-                    <label for=""> escolha sua cor
-                        <input type="color" id="cor_curso">
+                    <label for="cor_curso" class="label-cor">
+                        Escolha sua cor
+                        <div id="cor-quadrado" class="cor-quadrado"></div>
+                        <input type="color" id="cor_curso" class="input-cor-oculto">
                     </label>
+                    <div class="status_ambiente">
+                        <label>
+                            <input type="radio" name="status_ambiente" value="1" checked> Ativo
+                        </label>
+                        <label>
+                            <input type="radio" name="status_ambiente" value="0"> Inativo
+                        </label>
+                    </div>
                 </div>
                 <div class="button-container">
                     <button type="submit" class="btn-criar">Criar</button>
@@ -146,4 +155,5 @@
     <script src="../script/script_cursos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

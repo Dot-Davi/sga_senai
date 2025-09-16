@@ -24,12 +24,15 @@ const editStatusRadios = document.querySelectorAll('input[name="edit_status_ambi
 // Elementos da lista de ambientes
 const listaAmbientes = document.getElementById('lista-ambientes');
 
+// Variavel de caminho simbolico da API (aqui esta a mudança)
+const API_BASE_URL = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/';
+
 // URLs da API
-const URL_GET_TIPOS = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/tipos-ambientes';
-const URL_GET_AMBIENTES = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/ambientes';
-const URL_POST_AMBIENTE = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/ambientes';
-const URL_TOGGLE_STATUS = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/ambientes/';
-const URL_PUT_AMBIENTE = 'http://10.188.35.86:8024/arthur-pereira/api_sga/api/ambientes/';
+const URL_GET_TIPOS = `${API_BASE_URL}tipos-ambientes`;
+const URL_GET_AMBIENTES = `${API_BASE_URL}ambientes`;
+const URL_POST_AMBIENTE = `${API_BASE_URL}ambientes`;
+const URL_TOGGLE_STATUS = `${API_BASE_URL}ambientes/`;
+const URL_PUT_AMBIENTE = `${API_BASE_URL}ambientes/`;
 
 // --- Função para criar o HTML do card a partir dos dados do ambiente ---
 function criarCardAmbiente(ambiente) {
@@ -190,7 +193,6 @@ async function handleFormSubmit(event) {
         });
     }
 }
-
 // --- Funções do Modal de Edição ---
 async function carregarDadosParaEdicao(ambienteId) {
     try {
@@ -231,15 +233,24 @@ async function handleEditFormSubmit(event) {
     event.preventDefault();
 
     const ambienteId = editIdInput.value;
-    const statusAmbiente = document.querySelector('input[name="edit_status_ambiente"]:checked').value;
 
-    const payload = {
-        nome_ambiente: editNomeInput.value,
-        num_ambiente: editNumInput.value || null,
-        capacidade_ambiente: parseInt(editCapacidadeInput.value),
-        tipo_ambiente_id: parseInt(editTipoSelect.value),
-        status_ambiente: parseInt(statusAmbiente),
-    };
+    // 1. Começa com um objeto payload VAZIO.
+    const payload = {};
+
+    // 2. Verifica cada campo individualmente ANTES de o adicionar ao payload.
+    //    Se o campo estiver vazio, ele é simplesmente ignorado.
+    if (editNomeInput.value) {
+        payload.nome_ambiente = editNomeInput.value;
+    }
+    if (editNumInput.value) {
+        payload.num_ambiente = parseInt(editNumInput.value);
+    }
+    if (editCapacidadeInput.value) {
+        payload.capacidade_ambiente = parseInt(editCapacidadeInput.value);
+    }
+    if (editTipoSelect.value) {
+        payload.tipo_ambiente_id = parseInt(editTipoSelect.value);
+    }
 
     try {
         const response = await fetch(`${URL_PUT_AMBIENTE}${ambienteId}`, {
